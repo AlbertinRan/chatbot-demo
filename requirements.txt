@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+torch
+pydantic     # ajuster CPU ou GPU selon ton installation
+transformers
