@@ -1,23 +1,25 @@
 # AI Chatbot Demo 🤖
 
 This is a **demo version** of a professional AI chatbot system developed by **Randriamiharisoa Nomenjanahary Albertin**.  
-It can run locally using the **Mistral LLM** (no API key required) for testing and demonstration purposes.
+It uses the **Mistral AI API** to generate intelligent responses in real time.
 
 ---
 
 ## Features
 - Intelligent chatbot capable of responding to professional queries
-- Runs locally using **Mistral 7B** or similar LLM
-- Handles conversation flow and context for simple demos
-- Fully offline (optional GPU acceleration if available)
-- Easy to integrate with web apps or GUI frameworks like FastAPI or PyQt5
+- Real-time responses using **Mistral LLM API**
+- Lightweight (no heavy local model required)
+- Built with FastAPI for high performance
+- Easy integration with web or mobile applications
+- Environment-based configuration using `.env`
 
 ---
 
 ## Tech Stack
 - **Language:** Python  
-- **Libraries:** `transformers`, `torch`, `FastAPI`, `pydantic`  
-- **Framework:** FastAPI (for REST API)
+- **Framework:** FastAPI  
+- **AI:** Mistral API  
+- **Libraries:** `requests`, `pydantic`, `python-dotenv`  
 
 ---
 
@@ -54,38 +56,33 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> **Note:** Installing `torch` can take some time depending on your system.  
-> You may choose CPU-only or GPU installation as needed:
->
-> CPU-only:
-> ```bash
-> pip install torch --index-url https://download.pytorch.org/whl/cpu
-> ```
->
-> GPU (CUDA 11.8):
-> ```bash
-> pip install torch --index-url https://download.pytorch.org/whl/cu118
-> ```
+4. Configure environment variables:
 
-4. Run the demo API:
+Create a `.env` file:
+
+```env
+API_KEY=your_mistral_api_key_here
+```
+
+5. Run the API server:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-5. Open your browser and go to:
+6. Open Swagger UI:
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
-You can test the `/chat` endpoint directly from Swagger UI.
-
 ---
 
-## Usage / Example
+## API Usage
 
-1. Send a POST request to `/chat` with JSON payload:
+### 🔹 Example Request
+
+**POST /chat**
 
 ```json
 {
@@ -93,15 +90,15 @@ You can test the `/chat` endpoint directly from Swagger UI.
 }
 ```
 
-2. Response:
+---
+
+### 🔹 Example Response
 
 ```json
 {
-  "response": "Hello! I am your AI assistant. How can I help you today?"
+  "response": "Hello! I'm doing well. How can I assist you today?"
 }
 ```
-
-3. Works offline using Mistral locally; if GPU is available, responses are faster.
 
 ---
 
@@ -112,15 +109,24 @@ You can test the `/chat` endpoint directly from Swagger UI.
 * 📍 Madagascar
 * 📞 +261 34 26 376 11
 * 📧 [ndriamihary.28@gmail.com](mailto:ndriamihary.28@gmail.com)
-* 🌐 GitHub: [AlbertinRan](https://github.com/AlbertinRan)
+* 🌐 GitHub: https://github.com/AlbertinRan
 
 ---
 
 ## Notes
 
-* This is a **demo version** for showcasing AI skills.
-* No sensitive data is stored.
-* Can be extended for integration with CRM or ERP systems.
-* Mistral model can be swapped for OpenAI API if you have a valid API key.
+* This project uses the **Mistral API**, so an internet connection is required.
+* The `.env` file is not included for security reasons.
+* This is a **demo backend**, not production-ready.
+* Can be extended with authentication, database, and conversation memory.
+
+---
+
+## Future Improvements
+
+* Add conversation memory (chat history)
+* Integrate database (PostgreSQL / MongoDB)
+* Add frontend interface (React / HTML)
+* Deploy with Docker
 
 ---

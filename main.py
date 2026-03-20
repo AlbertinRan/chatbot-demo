@@ -1,34 +1,61 @@
-    
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+import requests
+import os
+from dotenv import load_dotenv
+
+# Charger variables d'environnement
+load_dotenv()
 
 app = FastAPI()
+
+API_KEY = os.getenv("API_KEY")
+
+if not API_KEY:
+    raise RuntimeError("API_KEY is missing! Add it in .env file.")
 
 class ChatRequest(BaseModel):
     message: str
 
-# Charger le modèle Mistral (par exemple gpt4all ou Mistral 7B)
-MODEL_NAME = "mistralai/Mistral-7B-v0.1"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.float16)
-model.eval()
 
 @app.get("/")
 def home():
-    return {"message": "AI Chatbot API running with Mistral"}
+    return {"message": "AI Chatbot API running with Mistral API"}
+
 
 @app.post("/chat")
 def chat(req: ChatRequest):
     user_message = req.message
 
-    # Préparer l'input
-    inputs = tokenizer(user_message, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
+    try:
+        response = requests.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "mistral-small",
+                "messages": [
+                    {"role": "user", "content": user_message}
+                ]
+            },
+            timeout=10
+        )
 
-    # Générer la réponse
-    with torch.no_grad():
-        outputs = model.generate(**inputs, max_new_tokens=150)
-    reply = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # Vérification erreur API
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Mistral API error: {response.text}"
+            )
+
+        data = response.json()
+        reply = data["choices"][0]["message"]["content"]
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Request failed: {e}")
+    except (KeyError, IndexError):
+        raise HTTPException(status_code=500, detail="Invalid response from Mistral API")
 
     return {"response": reply}
